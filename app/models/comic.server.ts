@@ -1,6 +1,6 @@
 import type { Comic } from "@prisma/client"
 
-import { prisma } from "~/db.server"
+import { prisma } from "~/utils/db.server"
 
 export type { Comic } from "@prisma/client"
 
@@ -13,8 +13,14 @@ export function getComic({ id }: Pick<Comic, "id">) {
 export function getComicListItems({ source }: Pick<Comic, "source">) {
   return prisma.comic.findMany({
     where: { source },
-    select: { id: true, title: true },
-    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      imgUrl: true,
+      url: true,
+    },
+    orderBy: { publishedAt: "desc" },
   })
 }
 
@@ -22,12 +28,21 @@ export function createComic({
   url,
   title,
   source,
-}: Pick<Comic, "url" | "title" | "source">) {
+  imgUrl,
+  description,
+  publishedAt,
+}: Pick<
+  Comic,
+  "url" | "title" | "source" | "imgUrl" | "description" | "publishedAt"
+>) {
   return prisma.comic.create({
     data: {
       title,
       url,
       source,
+      imgUrl,
+      description,
+      publishedAt,
     },
   })
 }
